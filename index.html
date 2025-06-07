@@ -77,14 +77,27 @@
       color: #555;
       user-select: none;
     }
+
+    #startButton {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border: 2px solid green;
+      background-color: #ccffcc;
+      border-radius: 8px;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
+  <div id="startButton">▶️ Toca aquí para empezar la música</div>
+
   <div id="mensaje">
     💡 Truco pro: ¡Te puedes salir del mapa para ganar como hacker! 👀😎
   </div>
 
-  <div id="game">
+  <div id="game" style="display:none;">
     <div id="player"></div>
     <div id="goal"></div>
 
@@ -104,6 +117,8 @@
   <audio id="winSound" src="sonido-gana.m4a"></audio>
 
   <script>
+    const startButton = document.getElementById("startButton");
+    const game = document.getElementById("game");
     const player = document.getElementById("player");
     const goal = document.getElementById("goal");
     const walls = document.querySelectorAll(".wall");
@@ -111,7 +126,14 @@
     const winSound = document.getElementById("winSound");
     const music = document.getElementById("music");
     const step = 10;
-    let musicStarted = false;
+
+    startButton.addEventListener("click", () => {
+      music.play().catch(() => {
+        alert("No se pudo iniciar la música.");
+      });
+      startButton.style.display = "none";
+      game.style.display = "block";
+    });
 
     function isColliding(a, b) {
       const rect1 = a.getBoundingClientRect();
@@ -126,18 +148,15 @@
 
     function showWinMessage() {
       winMessage.style.display = "block";
-      winSound.play();
+      winSound.play().catch(() => {
+        console.log("No se pudo reproducir el sonido de ganar.");
+      });
       setTimeout(() => {
         winMessage.style.display = "none";
       }, 4000);
     }
 
     document.addEventListener("keydown", (event) => {
-      if (!musicStarted) {
-        music.play();
-        musicStarted = true;
-      }
-
       let x = player.offsetLeft;
       let y = player.offsetTop;
 
