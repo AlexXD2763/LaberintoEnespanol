@@ -2,32 +2,39 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Mini Laberinto con Música y Sonido</title>
+  <title>Mini Laberinto</title>
   <style>
     body {
       margin: 0;
-      background-color: #f0f0f0;
       font-family: sans-serif;
+      background: #f0f0f0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      height: 100vh;
-      justify-content: center;
-      position: relative;
+    }
+
+    #startButton {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #ccffcc;
+      border: 2px solid green;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
     }
 
     #mensaje {
-      font-size: 18px;
+      margin: 10px;
       color: green;
-      margin-bottom: 10px;
     }
 
     #game {
-      position: relative;
       width: 400px;
       height: 400px;
-      background-color: #fff;
-      border: 3px solid #000;
+      border: 3px solid black;
+      background: white;
+      position: relative;
+      display: none;
     }
 
     .wall {
@@ -42,7 +49,6 @@
       position: absolute;
       top: 10px;
       left: 10px;
-      transition: left 0.1s, top 0.1s;
     }
 
     #goal {
@@ -56,48 +62,52 @@
 
     #winMessage {
       position: absolute;
-      top: 180px;
+      top: 170px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 22px;
-      font-weight: bold;
-      color: darkgreen;
-      background-color: #ccffcc;
-      padding: 10px 20px;
+      background: #ccffcc;
       border: 2px solid green;
-      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 20px;
       display: none;
-      user-select: none;
     }
 
     #footer {
-      position: fixed;
-      bottom: 10px;
+      margin-top: 10px;
       font-size: 14px;
-      color: #555;
+    }
+
+    #mobileControls {
+      display: none;
+      margin-top: 15px;
+    }
+
+    .arrow {
+      font-size: 30px;
+      padding: 10px;
+      margin: 5px;
+      background: #ddd;
+      border: 2px solid #aaa;
+      border-radius: 10px;
       user-select: none;
     }
 
-    #startButton {
-      font-size: 18px;
-      padding: 10px 20px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      border: 2px turquoise ;
-      background-color: #ccffcc;
-      border-radius: 8px;
-      user-select: none;
+    .arrow:active {
+      background: #bbb;
+    }
+
+    .row {
+      display: flex;
+      justify-content: center;
     }
   </style>
 </head>
 <body>
-  <div id="startButton">▶️ Toca aquí para empezar la música (y tambien el juego, se juega con las flechitas algo que tristemente no esta en telefono, mal por ti si sos de telefono :c) igual disfruta el juego</div>
 
-  <div id="mensaje">
-    💡 Truco pro: ¡Te puedes salir del mapa para ganar como hacker! 👀😎
-  </div>
+  <div id="startButton">▶️ Toca aquí para empezar la música y el juegazo chafa </div>
+  <div id="mensaje">💡 Truco: ¡Te puedes salir del mapa para ganar! 👀</div>
 
-  <div id="game" style="display:none;">
+  <div id="game">
     <div id="player"></div>
     <div id="goal"></div>
 
@@ -109,11 +119,20 @@
     <div id="winMessage">¡Ganastes or you win brother! que tal mi ingles</div>
   </div>
 
+  <div id="mobileControls">
+    <div class="row">
+      <div class="arrow" data-dir="ArrowUp">⬆️</div>
+    </div>
+    <div class="row">
+      <div class="arrow" data-dir="ArrowLeft">⬅️</div>
+      <div class="arrow" data-dir="ArrowDown">⬇️</div>
+      <div class="arrow" data-dir="ArrowRight">➡️</div>
+    </div>
+  </div>
+
   <div id="footer">Hecho por Alex</div>
 
-  <!-- Audio: Música de fondo -->
   <audio id="music" src="NONO.mp3" loop></audio>
-  <!-- Audio: Sonido de ganar -->
   <audio id="winSound" src="sonido-gana.m4a"></audio>
 
   <script>
@@ -123,47 +142,38 @@
     const goal = document.getElementById("goal");
     const walls = document.querySelectorAll(".wall");
     const winMessage = document.getElementById("winMessage");
-    const winSound = document.getElementById("winSound");
     const music = document.getElementById("music");
+    const winSound = document.getElementById("winSound");
+    const mobileControls = document.getElementById("mobileControls");
     const step = 10;
 
+    function isMobile() {
+      return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+
     startButton.addEventListener("click", () => {
-      music.play().catch(() => {
-        alert("No se pudo iniciar la música.");
-      });
+      music.play().catch(() => {});
       startButton.style.display = "none";
       game.style.display = "block";
+      if (isMobile()) {
+        mobileControls.style.display = "block";
+      }
     });
 
     function isColliding(a, b) {
-      const rect1 = a.getBoundingClientRect();
-      const rect2 = b.getBoundingClientRect();
-      return !(
-        rect1.right < rect2.left ||
-        rect1.left > rect2.right ||
-        rect1.bottom < rect2.top ||
-        rect1.top > rect2.bottom
-      );
+      const r1 = a.getBoundingClientRect();
+      const r2 = b.getBoundingClientRect();
+      return !(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom);
     }
 
-    function showWinMessage() {
-      winMessage.style.display = "block";
-      winSound.play().catch(() => {
-        console.log("No se pudo reproducir el sonido de ganar.");
-      });
-      setTimeout(() => {
-        winMessage.style.display = "none";
-      }, 4000);
-    }
-
-    document.addEventListener("keydown", (event) => {
+    function move(dir) {
       let x = player.offsetLeft;
       let y = player.offsetTop;
 
-      if (event.key === "ArrowUp") y -= step;
-      if (event.key === "ArrowDown") y += step;
-      if (event.key === "ArrowLeft") x -= step;
-      if (event.key === "ArrowRight") x += step;
+      if (dir === "ArrowUp") y -= step;
+      if (dir === "ArrowDown") y += step;
+      if (dir === "ArrowLeft") x -= step;
+      if (dir === "ArrowRight") x += step;
 
       const originalX = player.offsetLeft;
       const originalY = player.offsetTop;
@@ -180,10 +190,24 @@
       }
 
       if (isColliding(player, goal)) {
-        showWinMessage();
-        player.style.left = "10px";
-        player.style.top = "10px";
+        winMessage.style.display = "block";
+        winSound.play().catch(() => {});
+        setTimeout(() => {
+          winMessage.style.display = "none";
+          player.style.left = "10px";
+          player.style.top = "10px";
+        }, 4000);
       }
+    }
+
+    document.addEventListener("keydown", (e) => {
+      move(e.key);
+    });
+
+    document.querySelectorAll(".arrow").forEach(btn => {
+      btn.addEventListener("click", () => {
+        move(btn.dataset.dir);
+      });
     });
   </script>
 </body>
