@@ -99,7 +99,7 @@
   <div id="footer">Hecho por Alex</div>
 
   <!-- Audio: Música de fondo -->
-  <audio id="music" src="NONO.mp3" loop autoplay></audio>
+  <audio id="music" src="NONO.mp3" loop></audio>
   <!-- Audio: Sonido de ganar -->
   <audio id="winSound" src="sonido-gana.m4a"></audio>
 
@@ -109,7 +109,9 @@
     const walls = document.querySelectorAll(".wall");
     const winMessage = document.getElementById("winMessage");
     const winSound = document.getElementById("winSound");
+    const music = document.getElementById("music");
     const step = 10;
+    let musicStarted = false;
 
     function isColliding(a, b) {
       const rect1 = a.getBoundingClientRect();
@@ -131,6 +133,11 @@
     }
 
     document.addEventListener("keydown", (event) => {
+      if (!musicStarted) {
+        music.play();
+        musicStarted = true;
+      }
+
       let x = player.offsetLeft;
       let y = player.offsetTop;
 
