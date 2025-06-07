@@ -2,16 +2,23 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Mini Laberinto Mejorado</title>
+  <title>Mini Laberinto con Truco</title>
   <style>
     body {
       margin: 0;
       background-color: #f0f0f0;
       font-family: sans-serif;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
       height: 100vh;
+      justify-content: center;
+    }
+
+    #mensaje {
+      font-size: 18px;
+      color: green;
+      margin-bottom: 10px;
     }
 
     #game {
@@ -47,11 +54,16 @@
   </style>
 </head>
 <body>
+  <!-- Mensaje secreto -->
+  <div id="mensaje">
+    Hey you, yes you, you can leave the map to win with the green, also there are no levels, it just repeats... I hope you like it
+  </div>
+
   <div id="game">
     <div id="player"></div>
     <div id="goal"></div>
 
-    <!-- Nuevas paredes con espacio para llegar al verde -->
+    <!-- Paredes del laberinto -->
     <div class="wall" style="top: 0; left: 80px; width: 20px; height: 250px;"></div>
     <div class="wall" style="top: 100px; left: 80px; width: 220px; height: 20px;"></div>
     <div class="wall" style="top: 200px; left: 200px; width: 20px; height: 150px;"></div>
@@ -63,7 +75,6 @@
     const goal = document.getElementById("goal");
     const walls = document.querySelectorAll(".wall");
     const step = 10;
-    const game = document.getElementById("game");
 
     function isColliding(a, b) {
       const rect1 = a.getBoundingClientRect();
@@ -84,11 +95,6 @@
       if (event.key === "ArrowDown") y += step;
       if (event.key === "ArrowLeft") x -= step;
       if (event.key === "ArrowRight") x += step;
-
-      // No dejar que se salga del mapa
-      if (x < 0 || y < 0 || x > game.clientWidth - 20 || y > game.clientHeight - 20) {
-        return;
-      }
 
       const originalX = player.offsetLeft;
       const originalY = player.offsetTop;
