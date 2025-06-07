@@ -84,25 +84,20 @@
       if (event.key === "ArrowLeft") x -= step;
       if (event.key === "ArrowRight") x += step;
 
-      // Guardar posición original
       const originalX = player.offsetLeft;
       const originalY = player.offsetTop;
 
-      // Mover temporalmente
       player.style.left = x + "px";
       player.style.top = y + "px";
 
-      // Verificar colisión con paredes
       for (let wall of walls) {
         if (isColliding(player, wall)) {
-          // Volver a la posición original
           player.style.left = originalX + "px";
           player.style.top = originalY + "px";
           return;
         }
       }
 
-      // Verificar si ganó
       if (isColliding(player, goal)) {
         alert("¡Ganaste!");
         player.style.left = "10px";
