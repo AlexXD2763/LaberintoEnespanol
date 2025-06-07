@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Mini Laberinto con Truco</title>
+  <meta charset="UTF-8" />
+  <title>Mini Laberinto con Truco y Mensaje</title>
   <style>
     body {
       margin: 0;
@@ -41,6 +41,7 @@
       position: absolute;
       top: 10px;
       left: 10px;
+      transition: left 0.1s, top 0.1s;
     }
 
     #goal {
@@ -51,10 +52,26 @@
       top: 370px;
       left: 370px;
     }
+
+    #winMessage {
+      position: absolute;
+      top: 180px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      font-weight: bold;
+      color: darkgreen;
+      background-color: #ccffcc;
+      padding: 10px 20px;
+      border: 2px solid green;
+      border-radius: 8px;
+      display: none;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
-  <!-- Mensaje secreto -->
+  <!-- Texto con el truco -->
   <div id="mensaje">
     💡 Truco pro: ¡Te puedes salir del mapa para ganar como hacker! 👀😎
   </div>
@@ -63,17 +80,19 @@
     <div id="player"></div>
     <div id="goal"></div>
 
-    <!-- Paredes del laberinto -->
     <div class="wall" style="top: 0; left: 80px; width: 20px; height: 250px;"></div>
     <div class="wall" style="top: 100px; left: 80px; width: 220px; height: 20px;"></div>
     <div class="wall" style="top: 200px; left: 200px; width: 20px; height: 150px;"></div>
     <div class="wall" style="top: 300px; left: 80px; width: 120px; height: 20px;"></div>
+
+    <div id="winMessage">¡Ganaste or you win brother! ¿que tal mi ingles bien mal?/div>
   </div>
 
   <script>
     const player = document.getElementById("player");
     const goal = document.getElementById("goal");
     const walls = document.querySelectorAll(".wall");
+    const winMessage = document.getElementById("winMessage");
     const step = 10;
 
     function isColliding(a, b) {
@@ -85,6 +104,13 @@
         rect1.bottom < rect2.top ||
         rect1.top > rect2.bottom
       );
+    }
+
+    function showWinMessage() {
+      winMessage.style.display = "block";
+      setTimeout(() => {
+        winMessage.style.display = "none";
+      }, 3000);
     }
 
     document.addEventListener("keydown", (event) => {
@@ -111,7 +137,7 @@
       }
 
       if (isColliding(player, goal)) {
-        alert("¡Ganaste or you win! ¿que tal mi ingles?");
+        showWinMessage();
         player.style.left = "10px";
         player.style.top = "10px";
       }
